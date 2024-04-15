@@ -1,0 +1,13 @@
+Software Setup:
+...............
+
+React js
+React Native
+
+1.Node.js
+2.vs code
+
+Mobile:
+
+1.Android setup
+2.IOS setup
