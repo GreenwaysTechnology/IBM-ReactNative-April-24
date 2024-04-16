@@ -1,0 +1,12 @@
+//Promise Simple implementation
+
+function getError() {
+    //return promise
+    return Promise.reject('Something went wrong')
+}
+function blockMe(message) {
+    console.log(message)
+}
+blockMe('start')
+getError().catch(err => console.log(err))
+blockMe('end')
