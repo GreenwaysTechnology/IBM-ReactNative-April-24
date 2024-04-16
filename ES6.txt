@@ -508,10 +508,9 @@ connect(function (status) {
 })
 connect(status => console.log(status))
 
-.............................................................................................................................................................................................................................
+.....................................................................................
 				  Objects
-...............................................................................................................................................................................................................................
-			
+.....................................................................................			
 Objects can be created in two ways
 
 1.constructors pattern
@@ -730,7 +729,7 @@ How to implement async programming?
 Req:
 1.High level non blocking apis provided by js language.
         -timers,ajax,web socket....
-2.Listener function to handle async results which is called as callbacks.
+2.Listener function to  handle async results which is called as callbacks.
 3.Callbacks are implemented using Higher order Function(function as parameter)
 
 
@@ -850,7 +849,7 @@ Are you able to debug code easily?
 Are you able to scale code?
 
 No!
- This is called called "Callback Hell".
+ This is called "Callback Hell".
 
 How to avoid callback hell or how to write clean async code? how to write simple async programming without callback hell?
 
@@ -1100,7 +1099,7 @@ async function main() {
 }
 main()
 ....................................................................................
-				Module Pattern-ES 6 Modules
+			  Module Pattern-ES 6 Modules
 .....................................................................................
 Module patterns
 1.namespace design pattern
@@ -1111,9 +1110,6 @@ Module patterns
 6.UMD
 
 COMMON JS and ES 6 only in dev..
-
-
-
 
 
 How to write code across files and folders?
