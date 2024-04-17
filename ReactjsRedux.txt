@@ -370,11 +370,6 @@ React
 			  Browser Engine
 .....................................................................................
 
-
-How react represents dom inside react engine?
-
-
-
 How react represents dom inside react engine?
 
 Based on VDOM(Virtual DOM) specification...
@@ -680,17 +675,10 @@ react.js
 react-dom.js
 
 2.ReactDOM
+
    It is top level class which provides api to flush the v.dom into real dom.
 
-..................................................................................
-			Component Creational patterns
-...................................................................................
 
-
-1.variable pattern
-2.functional pattern
-3.es 6 class pattern
-..................................................................................
 			Component Creational patterns
 ...................................................................................
 
@@ -1031,9 +1019,69 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(<App />)
 
+....................................................................................
+                     Data Binding
+....................................................................................
+
+>npm create vite@latest data-binding --template react
+√ Select a framework: » React
+√ Select a variant: » JavaScript
+Scaffolding project in G:\IBM\2024\April\ReactNative\data-binding...
+
+Done. Now run:
+
+  cd data-binding
+  npm install
+  npm run dev
 
 
+G:\IBM\2024\April\ReactNative>cd data-binding
 
+G:\IBM\2024\April\ReactNative\data-binding>
+
+.....................................................................................
+			   Data Binding
+....................................................................................
+
+As of now we have seen only how to create static UI - (only HTML)
+
+How to represent data?
+->primitives - string,numbers,boolean
+->objects - object,arrays
+
+How to bind data?
+  {variable} {expression}
+ 
+  {a} {fun()} {10*2} {isHidden ? 'Show':'Hide'} 
+
+
+Simple Data binding:
+import ReactDOM from 'react-dom/client';
+
+const User = () => {
+    const userName = 'Subramanian Murugan'
+    const mail = 'sasubramanian_md@hotmail.com'
+    const status = false
+    const id = 1
+    const imageSrc='https://i.imgur.com/7vQD0fPs.jpg'
+
+    return <div>
+        <img src={imageSrc} height={50} width={50} />
+        <h1>Id {id}</h1>
+        <p>Name {userName}</p>
+        <p>Mail {mail}</p>
+        <p>Status {status ? 'Available' : 'Not Available'}</p>
+    </div>
+}
+
+const App = () => <>
+    <User />
+</>
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />
+);
+..................................................................................
 
 
 
