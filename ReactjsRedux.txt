@@ -2633,3 +2633,316 @@ const App = () => {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />
 );
+.....................................................................................
+			 Component Life cycles
+.....................................................................................
+
+React Component life cycle can be classified into three major phases
+
+1.Mount
+
+2.Update
+
+3.UnMount
+
+1.Mount :
+  Incase of class component
+
+ 1.constructor
+     Called only once in the component initalization
+     constructors are not used very much...
+ 2.render
+    Called for creating object tree-component tree-Virtual DOM
+
+ 3.componentDidMount
+    Called after render method, once the dom is ready- once ui is completed loaded
+    This method is used heavily  used in react all versions
+   It is used to inital data fetching from the apis
+   It is used to write any async task
+   It is used to write websocket connections
+
+
+2.Update
+    When user starts interacting
+   when state is mutated  -setState,forceUpdate
+   when new props are supplied -state as prop
+  
+   render
+      method is called after state mutation, in order to update ui with new state/
+   during render call,it creates vdom, apply an algorthim called "diff", to compute    old tree and new tree, update dom accordingly.
+  
+   componentDidUpdate
+     It is method which is called after render is completed in update cycle.
+    incase if you want fetch data from api after dom updates
+    incase if you want to any async tasks.
+    
+3.UnMount
+  When component is removed from memory
+ ComponentWillunMount
+   any resource clean up task...
+
+import { produce } from 'immer';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+
+
+class Counter extends React.Component {
+    state = {
+        value: 0
+    }
+    constructor() {
+        super()
+        console.log('constrcutor is called')
+    }
+    //render
+    render() {
+        console.log('render is called')
+        return <>
+            <h1>Counter {this.state.value} </h1>
+            <button onClick={() => {
+                this.setState(previousState => produce(previousState, (draft) => {
+                    draft.value += 1
+                }))
+            }}>+</button>
+        </>
+    }
+    componentDidMount() {
+        console.log('ComponentDidMount')
+    }
+    componentDidUpdate() {
+        console.log('ComponentDidUpdate')
+    }
+}
+
+
+
+const App = () => {
+    return <>
+        <Counter></Counter>
+    </>
+}
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />
+);
+...................................................................................
+			...................................................................................
+			Component Lifes and API Call
+...................................................................................
+
+In order to talk to REST API, react has no any opinion regarding which ajax libs should be used
+
+Popular ajax libs used inside react
+
+1.fetch
+2.axios
+
+import { produce } from 'immer';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+
+
+class Posts extends React.Component {
+    state = {
+        posts: [], //data
+        error: null,
+        isLoading: false
+    }
+
+    //render
+    render() {
+        const { posts, error, isLoading } = this.state
+        if (error) {
+            return <div style={{ marginLeft: 50 }}>
+                <h1>Error : {error.message}</h1>
+            </div>
+        } else if (!isLoading) {
+            return <h1 style={{ textAlign: 'center' }}>🛴</h1>
+        } else {
+            return <div style={{ marginLeft: 50 }}>
+                <h1>Posts</h1>
+                <hr />
+                <ul>
+                    {posts.map(post => {
+                        return <li>{post.title}</li>
+                    })}
+                </ul>
+            </div>
+
+        }
+    }
+    async componentDidMount() {
+        const url = 'https://jsonplaceholder.typicode.com/posts'
+        try {
+            const response = await fetch(url)
+            const posts = await response.json()
+            console.log(posts)
+            this.setState(previousState => {
+                return produce(previousState, draft => {
+                    draft.posts = posts
+                    draft.isLoading = true
+                    draft.error = previousState.error
+                })
+            })
+        }
+        catch (err) {
+            this.setState(previousState => {
+                return produce(previousState, draft => {
+                    draft.error = err
+                })
+            })
+        }
+
+    }
+
+}
+
+
+
+const App = () => {
+    return <>
+        <Posts></Posts>
+    </>
+}
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+....................................................................................
+.....................................................................................
+				Hooks
+....................................................................................
+
+Hooks are simple javascript function which holds Component's logic outside component.
+Incase of class component , if you define a biz logic, the similar logic if you have in another component, we can't reuse.
+
+React 16 introduced a feature called hooks, by using hooks you can eleminate class components completly, by keeping functional components
+
+Hooks abstract complex  biz logic in reusable mannager.
+
+React provides lot of built in hooks to build app , as simple as possible , mean time you can create your own hooks (custom hooks).
+
+Hooks features:
+
+1.hook is simple js function
+2.hook can take input and also return values
+3.every hook function starts with "useHookName"
+
+Common Built in Hooks
+
+1.useState
+   To declare state and mutation inside functions
+2.useEffect
+   It represents "Life Methods" - compoentDidMount,componentDidUpdate
+3.useContext
+4.useRef
+5.useMemo
+6.useCallback
+etc......
+
+Thanks class components,goodbye to class components....
+
+State declaration,mutation:
+...........................
+
+useState:
+
+Syntax:
+
+const [state,setState]=useState(initalState)
+
+state is just variable it could be any thing
+setState -  pure function its name generally setVariableName
+
+const [counter,setCounter]=useState(initalState)
+
+initalState could be
+
+1.primitive values numbers,string,boolean
+2.objects
+3.arrays
+
+const [counter,setCounter]=useState(0)
+const [state,setState]=useState('hello')
+const [state,setState]=useState(false)
+const [state,setState]=useState(null)
+const [state,setState]=useState({count:0})
+const [state,setState]=useState([])
+Basic Example: single state:
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom/client';
+
+function Review() {
+    //state declaration
+    const [like, setLike] = useState(0)
+    //listener 
+    const onLike = () => {
+        //logic
+        // setLike((prevState) => {
+        //     return prevState + 1
+        // })
+        //short cut
+        // setLike((prevState) => prevState + 1)
+        setLike(like + 1)
+
+    }
+    return <div>
+        <h1>Review App</h1>
+        <h3>Like {like}</h3>
+        {/* <button onClick={onLike}>Like</button> */}
+        <button onClick={() => setLike(like + 1)}>Like</button>
+    </div>
+}
+
+const App = () => {
+    return <>
+        <Review />
+    </>
+}
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+....................................................................................
+
+Multi State:
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom/client';
+
+const Review = () => {
+    const [like, setLike] = useState(0)
+    const [dislike, setDislike] = useState(0)
+    return <div>
+        <h1>Review App</h1>
+        <h3>Like {like} DisLike {dislike}</h3>
+        <button onClick={() => setLike(like + 1)}>Like</button>
+        <button onClick={() => setDislike(like + 1)}>DisLike</button>
+    </div>
+}
+
+const App = () => {
+    return <>
+        <Review />
+    </>
+}
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+....................................................................................
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

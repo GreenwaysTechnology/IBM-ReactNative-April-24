@@ -3,40 +3,66 @@ import ReactDOM from 'react-dom/client';
 import './index.css'
 import { produce } from 'immer';
 
-class HouseRating extends React.Component {
+class Posts extends React.Component {
+
     state = {
-        house: {
-            name: 'RavenClaw',
-            points: 10
+        posts: [],
+        error: null,
+        isLoading: false
+    }
+    async componentDidMount() {
+        const url = `https://jsonplaceholder.typicode.com/posts`
+        try {
+            const response = await fetch(url)
+            const posts = await response.json()
+            this.setState(prviousState => {
+                console.log('prevState', prviousState)
+                return produce(prviousState, (draft) => {
+                    console.log('draft ',draft)
+                    draft.posts = posts
+                    draft.isLoading = true
+                    draft.error = prviousState.error
+                })
+            })
+        }
+        catch (err) {
+            this.setState(prviousState => {
+                return produce(prviousState, (draft) => {
+                    draft.error = err
+                })
+            })
         }
     }
-    onIncreasePointsByTwo = () => {
-        this.setState((prveState) => {
-            return produce(prveState, draft => {
-                draft.house.points += 2
-            })
-        })
-    }
-
     render() {
-        return <div>
-            <HouseRatingDisplay {...this.state} onIncrement={this.onIncreasePointsByTwo} />
-        </div>
+        const { posts, error, isLoading } = this.state
+        if (error) {
+            return <div>
+                <h1>{error.message}</h1>
+            </div>
+        } else if (!isLoading) {
+            return <h1>Loading...</h1>
+        } else {
+            return <div>
+                <h1>Posts</h1>
+                <hr />
+                <ul>
+                    {posts.map(post => {
+                        return <li>{post.title}</li>
+                    })}
+                </ul>
+            </div>
+        }
+
     }
+
+
 }
 
-const HouseRatingDisplay = props => {
-    return <>
-        <h1>House Rating Component</h1>
-        <h3>House Name : {props.house.name}</h3>
-        <h3>Points : {props.house.points}</h3>
-        <button onClick={props.onIncrement}>+</button>
-    </>
-}
+
 
 const App = () => {
     return <>
-        <HouseRating />
+        <Posts />
     </>
 }
 
