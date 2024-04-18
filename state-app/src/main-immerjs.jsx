@@ -12,6 +12,15 @@ class HouseRating extends React.Component {
     }
     onIncreasePointsByTwo = () => {
         this.setState((prveState) => {
+            //using immutable syntax
+            // return {
+            //     ...prveState,  //level -0 copy
+            //      house: {
+            //         ...prveState.house, // level-1 copy : copy all properties within house 
+            //         points: prveState.house.points+ 2
+            //      }
+            // }
+            //using immer js 
             return produce(prveState, draft => {
                 draft.house.points += 2
             })
@@ -20,18 +29,12 @@ class HouseRating extends React.Component {
 
     render() {
         return <div>
-            <HouseRatingDisplay {...this.state} onIncrement={this.onIncreasePointsByTwo} />
+            <h1>House Rating Component</h1>
+            <h3>House Name : {this.state.house.name}</h3>
+            <h3>Points : {this.state.house.points}</h3>
+            <button onClick={this.onIncreasePointsByTwo}>+</button>
         </div>
     }
-}
-
-const HouseRatingDisplay = props => {
-    return <>
-        <h1>House Rating Component</h1>
-        <h3>House Name : {props.house.name}</h3>
-        <h3>Points : {props.house.points}</h3>
-        <button onClick={props.onIncrement}>+</button>
-    </>
 }
 
 const App = () => {
