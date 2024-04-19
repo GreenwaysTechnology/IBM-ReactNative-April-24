@@ -1,33 +1,36 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import './index.css'
 
-// const VideoPlayer = (props) => {
-//     const { width, height, controls, src, type } = props
-//     return <video width={width} height={height} controls={controls}>
-//         <source src={src} type={type} />
-//     </video>
+// const AlertButton = props => {
+
+//     return <>
+//         <button>{props.children}</button>
+//     </>
 // }
-const VideoPlayer = ({ width, height, controls, src, type }) => <video width={width} height={height} controls={controls}>
-    <source src={src} type={type} />
-</video>
-
-const App = () => {
-    const height = 200
-    const width = 200
-    const controls = true
-    const src = "movie.mp4"
-    const type = "video/mp4"
+const AlertButton = ({ children }) => {
 
     return <>
-        <div>
-            <VideoPlayer height={height} width={width} controls={controls} src={src} type={type} />
-        </div>
-        <div>
-            <VideoPlayer height={300} width={400} controls={true} src={src} type={type} />
-        </div>
-        <div>
-            <VideoPlayer height={300} width={400} controls={true} src={src} type={type} />
-        </div>
+        <button>{children}</button>
+    </>
+}
+
+const Label = props => {
+    return <>
+        {props.text}
+    </>
+}
+
+const App = () => {
+    return <>
+        {/* <AlertButton /> */}
+        <AlertButton>
+            PlayMovie
+        </AlertButton>
+        <AlertButton>
+            {/* component as prop */}
+            <Label text="UploadImage" />
+        </AlertButton>
     </>
 
 }

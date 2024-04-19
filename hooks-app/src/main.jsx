@@ -1,31 +1,25 @@
 import ReactDOM from 'react-dom/client'
 import './index.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { produce } from 'immer'
 
 
-const Review = () => {
-    //state declaration
-    const [like, setLike] = useState(0)
-    const [dislike, setDislike] = useState(0)
+const MyInput = () => {
+    const [text, setText] = useState('James')
 
+    const handleChange = (evt) => {
+        setText(evt.target.value)
+    }
     return <>
-        <h1>Review App</h1>
-        <h3>Like {like} Dislike {dislike}</h3>
-        <button onClick={() => {
-            setLike(like + 1)
-        }}>Like</button>
-        <button onClick={() => {
-            setDislike(dislike + 1)
-        }}>Dislike</button>
-
+        <h2>Your Name: {text}</h2>
+        <input value={text} onChange={handleChange} />
     </>
-
 }
 
 
 const App = () => {
     return <>
-        <Review />
+        <MyInput />
     </>
 }
 

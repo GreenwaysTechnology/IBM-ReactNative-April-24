@@ -2931,9 +2931,276 @@ const App = () => {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
 ....................................................................................
+			  Objects and hooks using immer
+.....................................................................................
+import ReactDOM from 'react-dom/client'
+import './index.css'
+import { useState } from 'react'
+import { produce } from 'immer'
 
 
+const Review = () => {
+    //state declaration
+    const [review, setReview] = useState({ like: 0, dislike: 0 })
+    return <>
+        <h1>Review App</h1>
+        <h3>Like {review.like} Dislike {review.dislike}</h3>
+        <button onClick={() => {
+            setReview(prevState => {
+                return produce(prevState, (draft) => {
+                    draft.like += 1
+                })
+            })
+        }}>Like</button>
+        <button onClick={() => {
+            setReview(prevState => {
+                return produce(prevState, (draft) => {
+                    draft.dislike += 1
+                })
+            })
+        }}>Dislike</button>
 
+    </>
+
+}
+
+
+const App = () => {
+    return <>
+        <Review />
+    </>
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+    <App />
+)
+
+....................................................................................
+			 Life Cycle callbacks and hooks
+.....................................................................................
+
+comonentDidMount,componentDidupdate,componentWillUnMount
+    =>useEffect
+
+
+componentDidMount
+
+import { produce } from 'immer';
+import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom/client';
+
+const Review = () => {
+    const [like, setLike] = useState(0)
+
+    //Life cycle methods
+    useEffect(() => {
+        //you can write any async code 
+        setTimeout(() => {
+            setLike(like + 10)
+        }, 5000)
+    }, [])
+
+    return <div>
+        <h1>Like {like}</h1>
+        <button onClick={() => {
+            setLike(like + 1)
+        }}>+</button>
+    </div>
+}
+
+const App = () => {
+    return <>
+        <Review />
+    </>
+}
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+
+componentDidUpdate:
+...................
+import { produce } from 'immer';
+import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom/client';
+
+const Review = () => {
+    const [like, setLike] = useState(0)
+    const [initialRender, setInitalRender] = useState(true);
+
+    //Life cycle methods
+    useEffect(() => {
+        if (initialRender) {
+            setInitalRender(false)
+        } else {
+            console.log('update')
+        }
+    }, [like])
+
+    return <div>
+        <h1>Like {like}</h1>
+        <button onClick={() => {
+            setLike(like + 1)
+        }}>+</button>
+    </div>
+}
+
+const App = () => {
+    return <>
+        <Review />
+    </>
+}
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+
+....................................................................................
+			 API Calls in useEffect
+....................................................................................
+import { produce } from 'immer';
+import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom/client';
+
+const Posts = () => {
+    const [post, setPost] = useState({
+        posts: [], //data
+        error: null,
+        isLoading: false
+    })
+    async function fetchPosts() {
+        const url = 'https://jsonplaceholder.typicode.com/posts'
+        try {
+            const response = await fetch(url)
+            const posts = await response.json()
+            console.log(posts)
+            setPost(previousState => {
+                return produce(previousState, draft => {
+                    draft.posts = posts
+                    draft.isLoading = true
+                    draft.error = previousState.error
+                })
+            })
+        }
+        catch (err) {
+            setPost(previousState => {
+                return produce(previousState, draft => {
+                    draft.error = err
+                })
+            })
+        }
+    }
+
+    useEffect(() => {
+        fetchPosts()
+    }, [])
+
+    if (post.error) {
+        return <div style={{ marginLeft: 50 }}>
+            <h1>Error : {post.error.message}</h1>
+        </div>
+    } else if (!post.isLoading) {
+        return <h1 style={{ textAlign: 'center' }}>🛴</h1>
+    } else {
+        return <div style={{ marginLeft: 50 }}>
+            <h1>Posts</h1>
+            <hr />
+            <ul>
+                {post.posts.map(post => {
+                    return <li>{post.title}</li>
+                })}
+            </ul>
+        </div>
+
+    }
+}
+
+const App = () => {
+    return <>
+        <Posts />
+    </>
+}
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+.....................................................................................
+		 Input from the user
+.....................................................................................
+
+import ReactDOM from 'react-dom/client'
+import './index.css'
+import { useEffect, useState } from 'react'
+import { produce } from 'immer'
+
+
+const MyInput = () => {
+    const [text, setText] = useState('James')
+
+    const handleChange = (evt) => {
+        setText(evt.target.value)
+    }
+    return <>
+        <h2>Your Name: {text}</h2>
+        <input value={text} onChange={handleChange} />
+    </>
+}
+
+
+const App = () => {
+    return <>
+        <MyInput />
+    </>
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+    <App />
+)
+.....................................................................................
+			Component as Prop
+....................................................................................
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import './index.css'
+
+// const AlertButton = props => {
+
+//     return <>
+//         <button>{props.children}</button>
+//     </>
+// }
+const AlertButton = ({ children }) => {
+
+    return <>
+        <button>{children}</button>
+    </>
+}
+
+const Label = props => {
+    return <>
+        {props.text}
+    </>
+}
+
+const App = () => {
+    return <>
+        {/* <AlertButton /> */}
+        <AlertButton>
+            PlayMovie
+        </AlertButton>
+        <AlertButton>
+            {/* component as prop */}
+            <Label text="UploadImage" />
+        </AlertButton>
+    </>
+
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+        <App />
+    </React.StrictMode>,
+)
 
 
 
