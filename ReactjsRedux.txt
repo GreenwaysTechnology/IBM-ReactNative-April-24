@@ -3762,7 +3762,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 ,..................................................................................
 ...................................................................................
 			    createSlice
-		   (actions,reducers,we dont need to create-automation)
+		  (actions,reducers,we dont need to create-automation)
 .....................................................................................
 
 It uses internally createAction,createRedurcer,immer js code, every thing in one place.
@@ -4087,3 +4087,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </Provider>
 
 )
+
