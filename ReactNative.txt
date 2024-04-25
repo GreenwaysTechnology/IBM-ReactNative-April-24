@@ -3112,6 +3112,287 @@ const styles = StyleSheet.create({
     }
 })
 
+....................................................................................
+			  Tab Navigation
+...................................................................................
+
+Tab Naviation:
+
+Types of Tabs
+1.TopTab
+2.BottomTab
+3.MaterialBottomTab | MaterialTopTab
+
+npm i @react-navigation/material-top-tabs
+npm i @react-navigation/bottom-tabs
+npm i @react-navigation/material-bottom-tabs
+npm i react-native-pager-view
+
+
+Material Top tab Navigation:
+
+import { NavigationContainer } from "@react-navigation/native";
+import { View, StyleSheet, Text } from 'react-native'
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+
+const Tab = createMaterialTopTabNavigator();
+
+const FeedScreen = () => {
+    return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>FeedScreen</Text>
+    </View>
+}
+const NotificationsScreen = () => {
+    return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>NotificationsScreen</Text>
+    </View>
+}
+const ProfileScreen = () => {
+    return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>ProfileScreen</Text>
+    </View>
+}
+function MyTabs() {
+    return <Tab.Navigator initialRouteName="Feed" screenOptions={{
+        tabBarActiveTintColor: '#e91e63',
+        tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: 'bold',
+        },
+        tabBarStyle: {
+            backgroundColor: 'powderblue'
+        }
+    }}>
+        <Tab.Screen name="Feed" component={FeedScreen} />
+        <Tab.Screen name="Notifications" component={NotificationsScreen} />
+        <Tab.Screen name="Profile" component={ProfileScreen} />
+    </Tab.Navigator>
+}
+
+function App() {
+    return <NavigationContainer>
+        <MyTabs />
+    </NavigationContainer>
+}
+
+export default App;
+
+Material Bottom Tab Navigation:
+................................
+
+npm install @react-navigation/material-bottom-tabs react-native-paper react-native-vector-icons
+
+import { NavigationContainer } from "@react-navigation/native";
+import { View, Text } from 'react-native'
+import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+const Tab = createMaterialBottomTabNavigator();
+
+const FeedScreen = () => {
+    return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>FeedScreen</Text>
+    </View>
+}
+const NotificationsScreen = () => {
+    return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>NotificationsScreen</Text>
+    </View>
+}
+const ProfileScreen = () => {
+    return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>ProfileScreen</Text>
+    </View>
+}
+
+function MyTabs() {
+    return (
+        <Tab.Navigator>
+            <Tab.Screen name="Feed" component={FeedScreen} options={{
+                tabBarLabel: 'Feed',
+                tabBarIcon: ({ color }) => (
+                    <MaterialCommunityIcons name="home" color={color} size={26} />
+                ),
+            }} />
+            <Tab.Screen name="Notification" component={NotificationsScreen} />
+            <Tab.Screen name="Profiles" component={ProfileScreen} />
+        </Tab.Navigator>
+    );
+}
+
+
+function App() {
+    return <SafeAreaProvider>
+        <NavigationContainer>
+            <MyTabs />
+        </NavigationContainer>
+    </SafeAreaProvider>
+}
+
+export default App;
+.....................................................................................
+			 Tab + Stack - How to coimbine both
+....................................................................................
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+//create tab:
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+const Messages = props => {
+    const { navigation } = props;
+    return <View style={styles.container}>
+        <Text>Messages Screen</Text>
+        <Button title="go to Settions" onPress={() => {
+            navigation.navigate('Settings')
+        }} />
+    </View>
+}
+
+const Feed = props => {
+    return <View style={styles.container}>
+        <Text>Feed Screen</Text>
+    </View>
+}
+const Settings = props => {
+    return <View style={styles.container}>
+        <Text>Settings Screen</Text>
+    </View>
+}
+
+const Home = props => {
+    return <Tab.Navigator>
+        <Tab.Screen name="Messages" component={Messages} />
+        <Tab.Screen name="Feed" component={Feed} />
+    </Tab.Navigator>
+}
+
+function App() {
+    return <NavigationContainer>
+        <Stack.Navigator>
+            <Stack.Screen
+                name="Home"
+                component={Home}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen name="Settings" component={Settings} />
+        </Stack.Navigator>
+    </NavigationContainer>
+
+}
+
+export default App;
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+});
+.....................................................................................
+.....................................................................................
+				Device Features
+.....................................................................................
+There are so many device features
+
+1.camera
+2.network
+3.contacts
+4.cellar
+5.SMS
+6.GPS
+etc.....
+
+How to access device features?
+
+React native community offeres various libs  to access those services
+https://reactnative.directory/
+https://docs.expo.dev/versions/latest/
+
+Note:
+You can use expo components inside react native projects directly...
+
+Using native serivces inside expo cli projects:
+
+creating expo projects and how to use device features
+
+npx create-expo-app MyExpoApp
+
+1.Location:
+
+How to use location?
+
+=>Inside expo project
+=>Can i use expo components inside bare react native projects- yes 
+
+Steps:
+1.Ensure Platform Compatiability.
+2.npx expo install expo-location
+
+
+
+app.json
+   "expo": {
+      "plugins": [
+        "expo-location",
+        "expo-av"
+      ]
+    },
+
+
+
+import { StatusBar } from 'expo-status-bar';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import * as Location from 'expo-location'
+
+export default function App() {
+  const [location, setLocation] = useState(null)
+  const [errorMsg, setErrorMsg] = useState(null)
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission Denined to access location')
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location)
+    })()
+  }, [])
+
+  let text = 'Getting Location....'
+  if (errorMsg) {
+    text = errorMsg
+  } else if (location) {
+    text = JSON.stringify(location)
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={{ fontSize: 20, color: 'blue' }}>{text}</Text>
+      <StatusBar style="auto" />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
+
 
 
 
