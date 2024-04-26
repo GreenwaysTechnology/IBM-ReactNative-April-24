@@ -12,7 +12,10 @@
       "backgroundColor": "#ffffff"
     },
     "plugins": [
-      "expo-location"
+      "expo-location",
+      "expo-av",
+      "expo-file-system"
+
     ],
     "assetBundlePatterns": [
       "**/*"

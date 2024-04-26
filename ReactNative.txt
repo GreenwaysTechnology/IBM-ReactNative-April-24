@@ -3392,6 +3392,266 @@ const styles = StyleSheet.create({
   },
 });
 
+.....................................................................................
+			  Expo-Av : video +audio
+
+
+install expo-av
+
+npx expo install expo-av
+
+
+app.json
+   "expo": {
+      "plugins": [
+        "expo-location",
+        "expo-av"
+      ]
+    },
+
+useRef:
+ useRef is a React Hook that lets you reference a value that’s not needed for rendering.
+
+In React how to refer dom element?
+
+For eg i have text box i need to refer text box inside code
+<text onInput={onGet}>
+
+=>Inside event listener
+
+const onGet = evt=>{ 
+  let textbox=evt.target 
+} 
+
+here textbox is just variable holds text element inside event listener.
+now we can access all properties of text box like value....
+
+=>Using traditional ref variable
+
+ <input ref={myRef} />
+
+=>Using reference -useRef
+
+Without event object , you can access text box value 
+ 
+const inputRef = useRef(initialValue)
+
+<input ref={inputRef} />;
+//Video player and audio.
+import { Video } from 'expo-av';
+import { useRef, useState, useEffect } from 'react'
+import { Button, View ,StyleSheet } from 'react-native';
+
+function App() {
+    const video = useRef(null)
+    const [status, setStatus] = useState({})
+
+    return <View style={styles.container}>
+        <Video
+            ref={video}
+            style={styles.video}
+            source={{
+                uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
+            }}
+            useNativeControls
+            resizeMode='contain'
+            isLooping
+            onPlaybackStatusUpdate={status => setStatus(() => status)}
+        />
+        <View>
+            <Button title={status.isPlaying ? 'Pause' : 'Play'} onPress={()=>{
+                status.isPlaying ? video.current.pauseAsync() : video.current.playAsync()
+            }}/>
+        </View>
+    </View>
+
+}
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttons: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    video: {
+        alignSelf: 'center',
+        width: 320,
+        height: 200
+    }
+});
+export default App;
+...................................................................................
+				File System
+....................................................................................
+
+npx expo install  expo-file-system
+npx expo install expo-sharing
+
+app.json
+   "expo": {
+      "plugins": [
+        "expo-location",
+        "expo-av",
+        "expo-filesystem",
+        "expo-sharing"
+      ]
+    }
+
+import { StyleSheet, Button, View, Platform } from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import { shareAsync } from 'expo-sharing';
+
+export default function App() {
+    const downloadFromUrl = async () => {
+        const filename = "small.mp4";
+        const result = await FileSystem.downloadAsync(
+            'http://techslides.com/demos/sample-videos/small.mp4',
+            FileSystem.documentDirectory + filename
+        );
+        console.log(result);
+
+        save(result.uri, filename, result.headers["Content-Type"]);
+    };
+
+
+
+    const save = async (uri, filename, mimetype) => {
+        if (Platform.OS === "android") {
+            const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+            if (permissions.granted) {
+                const base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+                await FileSystem.StorageAccessFramework.createFileAsync(permissions.directoryUri, filename, mimetype)
+                    .then(async (uri) => {
+                        await FileSystem.writeAsStringAsync(uri, base64, { encoding: FileSystem.EncodingType.Base64 });
+                    })
+                    .catch(e => console.log(e));
+            } else {
+                shareAsync(uri);
+            }
+        } else {
+            shareAsync(uri);
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            <Button title="Download From URL" onPress={downloadFromUrl} />
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+});
+.....................................................................................
+	How to use Device features (expo components) inside bare React Native Project
+.....................................................................................
+.....................................................................................
+		  Bare React Native Projects and Expo Components
+....................................................................................
+
+There  are two ways to intall expo modules int bare react native project
+
+https://docs.expo.dev/bare/installing-expo-modules/#configuration-for-android
+
+
+Steps:
+1.npm install expo
+
+Manual installation
+
+npm install expo
+
+Configuration for Android
+
+MainActivity.kt
+
+package com.myapp
+import expo.modules.ReactActivityDelegateWrapper
+import com.facebook.react.ReactActivity
+import com.facebook.react.ReactActivityDelegate
+   * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
+   */
+  override fun createReactActivityDelegate(): ReactActivityDelegate =
+      DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+      ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled))
+}
+
+MainApplication.kt
+package com.myapp
+import android.content.res.Configuration
+import expo.modules.ApplicationLifecycleDispatcher
+import expo.modules.ReactNativeHostWrapper
+import android.app.Application
+import com.facebook.react.PackageList
+class MainApplication : Application(), ReactApplication {
+  override val reactNativeHost: ReactNativeHost =
+      object : DefaultReactNativeHost(this) {
+      ReactNativeHostWrapper(this, object : DefaultReactNativeHost(this) {
+        override fun getPackages(): List<ReactPackage> =
+            PackageList(this).packages.apply {
+              // Packages that cannot be autolinked yet can be added manually here, for example:
+        override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
+        override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED
+      }
+      })
+  override val reactHost: ReactHost
+    get() = getDefaultReactHost(this.applicationContext, reactNativeHost)
+      load()
+    }
+    ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
+    ApplicationLifecycleDispatcher.onApplicationCreate(this)
+  }
+ 
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
+  }
+}
+
+settings.gradle
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+include ':app'
+includeBuild('../node_modules/@react-native/gradle-plugin')
+ 
+apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
+useExpoModules()
+
+
+Usage
+Verifying installation
+You can verify that the installation was successful by logging a value from expo-constants.
+
+Run npx expo install expo-constants
+Then, run npx expo run and modify your app JavaScript code to add the following:
+import Constants from 'expo-constants';
+console.log(Constants.systemFonts);
+.....................................................................................
+
+
+Mobile App:
+
+ -Mobile widgets -View,Text,List,..... : Third Party - expo,open source...
+ ->Styling - layouts-flex box
+ ->Navigation
+ -Mobile Device features - location,sms,location,fileSystem,video,.......
+
+
+
+
+
+
+
 
 
 

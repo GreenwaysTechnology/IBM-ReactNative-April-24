@@ -1,38 +1,44 @@
-import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import * as Location from 'expo-location'
-
+import { StyleSheet, Button, View, Platform } from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import { shareAsync } from 'expo-sharing';
 
 export default function App() {
-    const [location, setLocation] = useState(null)
-    const [errorMsg, setErrorMsg] = useState(null)
+    const downloadFromUrl = async () => {
+        const filename = "small.mp4";
+        const result = await FileSystem.downloadAsync(
+            'http://techslides.com/demos/sample-videos/small.mp4',
+            FileSystem.documentDirectory + filename
+        );
+        console.log(result);
 
-    useEffect(() => {
-        async function init() {
-            let { status } = await Location.requestForegroundPermissionsAsync();
+        save(result.uri, filename, result.headers["Content-Type"]);
+    };
 
-            if (status !== 'granted') {
-                setErrorMsg('Permission Denined to access location')
-                return
+
+
+    const save = async (uri, filename, mimetype) => {
+        if (Platform.OS === "android") {
+            const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+            if (permissions.granted) {
+                const base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+                await FileSystem.StorageAccessFramework.createFileAsync(permissions.directoryUri, filename, mimetype)
+                    .then(async (uri) => {
+                        await FileSystem.writeAsStringAsync(uri, base64, { encoding: FileSystem.EncodingType.Base64 });
+                    })
+                    .catch(e => console.log(e));
+            } else {
+                shareAsync(uri);
             }
-            let location = await Location.getCurrentPositionAsync({})
-            setLocation(location)
-
+        } else {
+            shareAsync(uri);
         }
-        init()
+    };
 
-    }, [])
-
-    let text = 'Getting Location...'
-    if (errorMsg) {
-        text = errorMsg
-    } else if (location) {
-        text = JSON.stringify(location)
-    }
-    return <View style={styles.container}>
-        <Text style={{ fontSize: 20, color: 'blue' }}>{text}</Text>
-    </View>
+    return (
+        <View style={styles.container}>
+            <Button title="Download From URL" onPress={downloadFromUrl} />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
